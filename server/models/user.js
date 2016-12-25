@@ -71,6 +71,26 @@ UserSchema.statics.findByToken = function(token) {  //these are model method unl
   });
 };
 
+UserSchema.statics.findByCredentials = function(email, password) {  //these are model method unlike instance method defined above
+  var User = this;  //model method get called with the model and not the document
+
+  return User.findOne({email}).then((user)=>{
+    if(!user){
+      return Promise.reject();
+    }
+
+    return new Promise((resolve, reject) => {
+      bcrypt.compare(password, user.password, (err, res)=> {
+        if(res){
+          resolve(user);
+        } else {
+          reject();
+        }
+      });
+    });
+  });
+};
+
 UserSchema.pre('save', function(next) {  //mongoose middleware use to check things before save
   var user = this;
   if(user.isModified('password')) {
