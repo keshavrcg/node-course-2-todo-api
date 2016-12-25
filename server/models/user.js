@@ -51,6 +51,18 @@ UserSchema.methods.generateAuthToken = function () { //arrow function not bind t
   });
 };
 
+//called this function using user.findByToken
+UserSchema.methods.removeToken = function(token) {
+  var user = this;
+
+  return user.update({
+    $pull: {    //pull will find the token and delete the whole token array for that user.
+      tokens: {token}
+    }
+  });
+}
+
+//called this function using User.findByToken (User model)
 UserSchema.statics.findByToken = function(token) {  //these are model method unlike instance method defined above
   var User = this;  //model method get called with the model and not the document
   var decoded;
